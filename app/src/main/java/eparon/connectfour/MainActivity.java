@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.GridLayout.*;
 import android.widget.ImageButton;
@@ -26,7 +27,9 @@ public class MainActivity extends AppCompatActivity {
     int slotWidth;
     double slotHeight;
 
+    FrameLayout fl[][] = new FrameLayout[row.length][col.length];
     ImageButton ib[][] = new ImageButton[row.length][col.length];
+    ImageView iv[][] = new ImageView[row.length][col.length];
     int placeUsed[][] = new int[row.length][col.length];
 
     TextView Text;
@@ -84,17 +87,19 @@ public class MainActivity extends AppCompatActivity {
 
                 placeUsed[i][j] = 0;
 
-                View v = View.inflate(this, R.layout.border, null);
+                View v = View.inflate(this, R.layout.slot, null);
+                fl[i][j] = v.findViewById(R.id.fl);
                 ib[i][j] = v.findViewById(R.id.image);
+                iv[i][j] = v.findViewById(R.id.line);
 
-                if (ib[i][j].getParent() != null)
-                    ((ViewGroup) ib[i][j].getParent()).removeView(ib[i][j]);
+                if (fl[i][j].getParent() != null)
+                    ((ViewGroup) fl[i][j].getParent()).removeView(fl[i][j]);
 
                 LayoutParams lp = new LayoutParams(row[i], col[j]);
                 lp.width = slotWidth;
                 lp.height = (int) (slotHeight);
-                ib[i][j].setLayoutParams(lp);
-                gridLayout.addView(ib[i][j], lp);
+                fl[i][j].setLayoutParams(lp);
+                gridLayout.addView(fl[i][j], lp);
 
                 final int finalJ = j;
                 ib[i][j].setOnClickListener(new View.OnClickListener() {
@@ -117,13 +122,17 @@ public class MainActivity extends AppCompatActivity {
         if (!winner) {
             for (int i = 0; i < row.length; i++) {
                 if (placeUsed[row.length - 1 - i][colInt] == 0) {
+
                     placeUsed[row.length - 1 - i][colInt] = gameTurn % 2 + 1;
                     ib[row.length - 1 - i][colInt].setImageResource(soldiers[gameTurn % 2]);
+
                     Text.setText(String.format("%s's turn", colors[gameTurn % 2]));
                     currentPlayer.setImageResource(cpColors[gameTurn % 2]);
+
                     gameTurn++;
                     if (gameTurn == 81)
                         Text.setText("Draw!");
+
                     CheckWin();
                     break;
                 }
@@ -140,7 +149,14 @@ public class MainActivity extends AppCompatActivity {
                         && placeUsed[row.length - 1 - i][j] == placeUsed[row.length - 1 - i][j + 1]
                         && placeUsed[row.length - 1 - i][j] == placeUsed[row.length - 1 - i][j + 2]
                         && placeUsed[row.length - 1 - i][j] == placeUsed[row.length - 1 - i][j + 3]) {
+
                     Text.setText(String.format("The Winner is: %s", colors[gameTurn % 2]));
+
+                    iv[row.length - 1 - i][j].setImageResource(R.drawable.line_horizontal_left);
+                    iv[row.length - 1 - i][j + 1].setImageResource(R.drawable.line_horizontal_middle);
+                    iv[row.length - 1 - i][j + 2].setImageResource(R.drawable.line_horizontal_middle);
+                    iv[row.length - 1 - i][j + 3].setImageResource(R.drawable.line_horizontal_right);
+
                     winner = true;
                     break;
                 }
@@ -155,7 +171,14 @@ public class MainActivity extends AppCompatActivity {
                             && placeUsed[row.length - 1 - j][i] == placeUsed[row.length - 2 - j][i]
                             && placeUsed[row.length - 1 - j][i] == placeUsed[row.length - 3 - j][i]
                             && placeUsed[row.length - 1 - j][i] == placeUsed[row.length - 4 - j][i]) {
+
                         Text.setText(String.format("The Winner is: %s", colors[gameTurn % 2]));
+
+                        iv[row.length - 1 - j][i].setImageResource(R.drawable.line_vertical_bottom);
+                        iv[row.length - 2 - j][i].setImageResource(R.drawable.line_vertical_middle);
+                        iv[row.length - 3 - j][i].setImageResource(R.drawable.line_vertical_middle);
+                        iv[row.length - 4 - j][i].setImageResource(R.drawable.line_vertical_top);
+
                         winner = true;
                         break;
                     }
@@ -172,7 +195,21 @@ public class MainActivity extends AppCompatActivity {
                         && placeUsed[row.length - 1 - i][j] == placeUsed[row.length - 2 - i][j + 1]
                         && placeUsed[row.length - 1 - i][j] == placeUsed[row.length - 3 - i][j + 2]
                         && placeUsed[row.length - 1 - i][j] == placeUsed[row.length - 4 - i][j + 3]) {
+
                     Text.setText(String.format("The Winner is: %s", colors[gameTurn % 2]));
+
+                    iv[row.length - 1 - i][j].setImageResource(R.drawable.diagonalline_bottomleft);
+                    iv[row.length - 2 - i][j + 1].setImageResource(R.drawable.diagonalline_ascending);
+                    iv[row.length - 3 - i][j + 2].setImageResource(R.drawable.diagonalline_ascending);
+                    iv[row.length - 4 - i][j + 3].setImageResource(R.drawable.diagonalline_topright);
+
+                    iv[row.length - 2 - i][j].setImageResource(R.drawable.diagonalline_ascending_leftover_top);
+                    iv[row.length - 3 - i][j + 1].setImageResource(R.drawable.diagonalline_ascending_leftover_top);
+                    iv[row.length - 4 - i][j + 2].setImageResource(R.drawable.diagonalline_ascending_leftover_top);
+                    iv[row.length - 1 - i][j + 1].setImageResource(R.drawable.diagonalline_ascending_leftover_bottom);
+                    iv[row.length - 2 - i][j + 2].setImageResource(R.drawable.diagonalline_ascending_leftover_bottom);
+                    iv[row.length - 3 - i][j + 3].setImageResource(R.drawable.diagonalline_ascending_leftover_bottom);
+
                     winner = true;
                     break;
                 }
@@ -182,7 +219,21 @@ public class MainActivity extends AppCompatActivity {
                         && placeUsed[row.length - 4 - i][j] == placeUsed[row.length - 3 - i][j + 1]
                         && placeUsed[row.length - 4 - i][j] == placeUsed[row.length - 2 - i][j + 2]
                         && placeUsed[row.length - 4 - i][j] == placeUsed[row.length - 1 - i][j + 3]) {
+
                     Text.setText(String.format("The Winner is: %s", colors[gameTurn % 2]));
+
+                    iv[row.length - 4 - i][j].setImageResource(R.drawable.diagonalline_topleft);
+                    iv[row.length - 3 - i][j + 1].setImageResource(R.drawable.diagonalline_descending);
+                    iv[row.length - 2 - i][j + 2].setImageResource(R.drawable.diagonalline_descending);
+                    iv[row.length - 1 - i][j + 3].setImageResource(R.drawable.diagonalline_bottomright);
+
+                    iv[row.length - 4 - i][j + 1].setImageResource(R.drawable.diagonalline_descending_leftover_top);
+                    iv[row.length - 3 - i][j + 2].setImageResource(R.drawable.diagonalline_descending_leftover_top);
+                    iv[row.length - 2 - i][j + 3].setImageResource(R.drawable.diagonalline_descending_leftover_top);
+                    iv[row.length - 3 - i][j].setImageResource(R.drawable.diagonalline_descending_leftover_bottom);
+                    iv[row.length - 2 - i][j + 1].setImageResource(R.drawable.diagonalline_descending_leftover_bottom);
+                    iv[row.length - 1 - i][j + 2].setImageResource(R.drawable.diagonalline_descending_leftover_bottom);
+
                     winner = true;
                     break;
                 }
