@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
                 placeUsed[i][j] = 0;
 
-                View v = View.inflate(this, R.layout.slot, null);
+                View v = View.inflate(this, R.layout.cell, null);
                 fl[i][j] = v.findViewById(R.id.fl);
                 ib[i][j] = v.findViewById(R.id.image);
                 iv[i][j] = v.findViewById(R.id.line);
