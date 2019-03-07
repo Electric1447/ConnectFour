@@ -189,53 +189,55 @@ public class MainActivity extends AppCompatActivity {
         // Diagonal Line Wins
         for (int i = 0; i < row.length - 3; i++) {
             for (int j = 0; j < col.length - 3; j++) {
+                if (!winner) {
 
-                // Ascending Diagonal Line Win
-                if (placeUsed[row.length - 1 - i][j] != 0
-                        && placeUsed[row.length - 1 - i][j] == placeUsed[row.length - 2 - i][j + 1]
-                        && placeUsed[row.length - 1 - i][j] == placeUsed[row.length - 3 - i][j + 2]
-                        && placeUsed[row.length - 1 - i][j] == placeUsed[row.length - 4 - i][j + 3]) {
+                    // Ascending Diagonal Line Win
+                    if (placeUsed[row.length - 1 - i][j] != 0
+                            && placeUsed[row.length - 1 - i][j] == placeUsed[row.length - 2 - i][j + 1]
+                            && placeUsed[row.length - 1 - i][j] == placeUsed[row.length - 3 - i][j + 2]
+                            && placeUsed[row.length - 1 - i][j] == placeUsed[row.length - 4 - i][j + 3]) {
 
-                    Text.setText(String.format("The Winner is: %s", colors[gameTurn % 2]));
+                        Text.setText(String.format("The Winner is: %s", colors[gameTurn % 2]));
 
-                    iv[row.length - 1 - i][j].setImageResource(R.drawable.diagonalline_bottomleft);
-                    iv[row.length - 2 - i][j + 1].setImageResource(R.drawable.diagonalline_ascending);
-                    iv[row.length - 3 - i][j + 2].setImageResource(R.drawable.diagonalline_ascending);
-                    iv[row.length - 4 - i][j + 3].setImageResource(R.drawable.diagonalline_topright);
+                        iv[row.length - 1 - i][j].setImageResource(R.drawable.diagonalline_bottomleft);
+                        iv[row.length - 2 - i][j + 1].setImageResource(R.drawable.diagonalline_ascending);
+                        iv[row.length - 3 - i][j + 2].setImageResource(R.drawable.diagonalline_ascending);
+                        iv[row.length - 4 - i][j + 3].setImageResource(R.drawable.diagonalline_topright);
 
-                    iv[row.length - 2 - i][j].setImageResource(R.drawable.diagonalline_ascending_leftover_top);
-                    iv[row.length - 3 - i][j + 1].setImageResource(R.drawable.diagonalline_ascending_leftover_top);
-                    iv[row.length - 4 - i][j + 2].setImageResource(R.drawable.diagonalline_ascending_leftover_top);
-                    iv[row.length - 1 - i][j + 1].setImageResource(R.drawable.diagonalline_ascending_leftover_bottom);
-                    iv[row.length - 2 - i][j + 2].setImageResource(R.drawable.diagonalline_ascending_leftover_bottom);
-                    iv[row.length - 3 - i][j + 3].setImageResource(R.drawable.diagonalline_ascending_leftover_bottom);
+                        iv[row.length - 2 - i][j].setImageResource(R.drawable.diagonalline_ascending_leftover_top);
+                        iv[row.length - 3 - i][j + 1].setImageResource(R.drawable.diagonalline_ascending_leftover_top);
+                        iv[row.length - 4 - i][j + 2].setImageResource(R.drawable.diagonalline_ascending_leftover_top);
+                        iv[row.length - 1 - i][j + 1].setImageResource(R.drawable.diagonalline_ascending_leftover_bottom);
+                        iv[row.length - 2 - i][j + 2].setImageResource(R.drawable.diagonalline_ascending_leftover_bottom);
+                        iv[row.length - 3 - i][j + 3].setImageResource(R.drawable.diagonalline_ascending_leftover_bottom);
 
-                    winner = true;
-                    break;
-                }
+                        winner = true;
+                        break;
+                    }
 
-                // Descending Diagonal Line Win
-                if (placeUsed[row.length - 4 - i][j] != 0
-                        && placeUsed[row.length - 4 - i][j] == placeUsed[row.length - 3 - i][j + 1]
-                        && placeUsed[row.length - 4 - i][j] == placeUsed[row.length - 2 - i][j + 2]
-                        && placeUsed[row.length - 4 - i][j] == placeUsed[row.length - 1 - i][j + 3]) {
+                    // Descending Diagonal Line Win
+                    if (placeUsed[row.length - 4 - i][j] != 0
+                            && placeUsed[row.length - 4 - i][j] == placeUsed[row.length - 3 - i][j + 1]
+                            && placeUsed[row.length - 4 - i][j] == placeUsed[row.length - 2 - i][j + 2]
+                            && placeUsed[row.length - 4 - i][j] == placeUsed[row.length - 1 - i][j + 3]) {
 
-                    Text.setText(String.format("The Winner is: %s", colors[gameTurn % 2]));
+                        Text.setText(String.format("The Winner is: %s", colors[gameTurn % 2]));
 
-                    iv[row.length - 4 - i][j].setImageResource(R.drawable.diagonalline_topleft);
-                    iv[row.length - 3 - i][j + 1].setImageResource(R.drawable.diagonalline_descending);
-                    iv[row.length - 2 - i][j + 2].setImageResource(R.drawable.diagonalline_descending);
-                    iv[row.length - 1 - i][j + 3].setImageResource(R.drawable.diagonalline_bottomright);
+                        iv[row.length - 4 - i][j].setImageResource(R.drawable.diagonalline_topleft);
+                        iv[row.length - 3 - i][j + 1].setImageResource(R.drawable.diagonalline_descending);
+                        iv[row.length - 2 - i][j + 2].setImageResource(R.drawable.diagonalline_descending);
+                        iv[row.length - 1 - i][j + 3].setImageResource(R.drawable.diagonalline_bottomright);
 
-                    iv[row.length - 4 - i][j + 1].setImageResource(R.drawable.diagonalline_descending_leftover_top);
-                    iv[row.length - 3 - i][j + 2].setImageResource(R.drawable.diagonalline_descending_leftover_top);
-                    iv[row.length - 2 - i][j + 3].setImageResource(R.drawable.diagonalline_descending_leftover_top);
-                    iv[row.length - 3 - i][j].setImageResource(R.drawable.diagonalline_descending_leftover_bottom);
-                    iv[row.length - 2 - i][j + 1].setImageResource(R.drawable.diagonalline_descending_leftover_bottom);
-                    iv[row.length - 1 - i][j + 2].setImageResource(R.drawable.diagonalline_descending_leftover_bottom);
+                        iv[row.length - 4 - i][j + 1].setImageResource(R.drawable.diagonalline_descending_leftover_top);
+                        iv[row.length - 3 - i][j + 2].setImageResource(R.drawable.diagonalline_descending_leftover_top);
+                        iv[row.length - 2 - i][j + 3].setImageResource(R.drawable.diagonalline_descending_leftover_top);
+                        iv[row.length - 3 - i][j].setImageResource(R.drawable.diagonalline_descending_leftover_bottom);
+                        iv[row.length - 2 - i][j + 1].setImageResource(R.drawable.diagonalline_descending_leftover_bottom);
+                        iv[row.length - 1 - i][j + 2].setImageResource(R.drawable.diagonalline_descending_leftover_bottom);
 
-                    winner = true;
-                    break;
+                        winner = true;
+                        break;
+                    }
                 }
             }
         }
