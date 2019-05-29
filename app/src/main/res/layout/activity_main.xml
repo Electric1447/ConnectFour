@@ -44,7 +44,7 @@
             android:id="@+id/text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="30dp"
             android:layout_marginBottom="40dp"
             android:gravity="center"
             android:textColor="#000"
@@ -68,9 +68,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="#FAFAFA"
-        android:paddingLeft="28dp"
-        android:paddingBottom="5dp"
+        android:paddingLeft="26dp"
+        android:paddingBottom="6dp"
         android:textSize="16sp" />
 
 </android.support.design.widget.CoordinatorLayout>

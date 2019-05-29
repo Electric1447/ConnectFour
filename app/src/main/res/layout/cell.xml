@@ -10,6 +10,7 @@
         android:id="@+id/image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
         android:background="@null"
         android:scaleType="fitXY"
         android:src="@drawable/empty_border" />
@@ -18,6 +19,7 @@
         android:id="@+id/line"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
         android:scaleType="fitXY" />
 
 </FrameLayout>
