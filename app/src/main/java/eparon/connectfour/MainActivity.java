@@ -1,7 +1,6 @@
 package eparon.connectfour;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -14,8 +13,6 @@ import android.widget.GridLayout.Spec;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import org.apache.commons.io.FileUtils;
 
 @SuppressLint("SetTextI18n")
 public class MainActivity extends AppCompatActivity {
@@ -78,8 +75,6 @@ public class MainActivity extends AppCompatActivity {
      *  Initialize Game
      */
     private void Init (boolean onAppStart) {
-
-        deleteCache(getApplicationContext());
 
         gameTurn = 0;
         winner = false;
@@ -253,10 +248,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void resetGame (View view) {
         Init(false);
-    }
-
-    public static void deleteCache (Context context) {
-        FileUtils.deleteQuietly(context.getCacheDir());
     }
 
 }
