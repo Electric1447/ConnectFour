@@ -3,7 +3,6 @@ package eparon.connectfour;
 import android.annotation.SuppressLint;
 import android.graphics.Point;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -13,6 +12,8 @@ import android.widget.GridLayout.Spec;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 @SuppressLint("SetTextI18n")
 public class MainActivity extends AppCompatActivity {
@@ -55,8 +56,7 @@ public class MainActivity extends AppCompatActivity {
         getWindowManager().getDefaultDisplay().getSize(size);
         final float scale = getApplicationContext().getResources().getDisplayMetrics().density;
         int pixels = (int)(40 * scale + 1f);
-        double screenWidth = size.x - pixels;
-        slotParams = (int)(screenWidth / BOARD_SIZE);
+        slotParams = (size.x - pixels) / BOARD_SIZE;
 
         // Initializing the GridLayout;
         for (int i = 0; i < BOARD_SIZE; i++) {
@@ -90,8 +90,7 @@ public class MainActivity extends AppCompatActivity {
                     ib[i][j] = v.findViewById(R.id.image);
                     iv[i][j] = v.findViewById(R.id.line);
 
-                    if (fl[i][j].getParent() != null)
-                        ((ViewGroup)fl[i][j].getParent()).removeView(fl[i][j]);
+                    if (fl[i][j].getParent() != null) ((ViewGroup)fl[i][j].getParent()).removeView(fl[i][j]);
 
                     LayoutParams lp = new LayoutParams(row[i], col[j]);
                     lp.width = slotParams;
@@ -105,12 +104,7 @@ public class MainActivity extends AppCompatActivity {
                 iv[i][j].setImageResource(android.R.color.transparent);
 
                 final int finalJ = j;
-                ib[i][j].setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick (View view) {
-                        DoTurn(finalJ);
-                    }
-                });
+                ib[i][j].setOnClickListener(view -> DoTurn(finalJ));
             }
         }
 
@@ -132,8 +126,7 @@ public class MainActivity extends AppCompatActivity {
                     currentPlayer.setImageResource(cpColors[gameTurn % 2]);
 
                     gameTurn++;
-                    if (gameTurn == 81)
-                        Text.setText("Draw!");
+                    if (gameTurn == 81) Text.setText("Draw!");
 
                     CheckWin();
                     break;
@@ -144,8 +137,10 @@ public class MainActivity extends AppCompatActivity {
 
         // Horizontal Win
         for (int i = 0; i < BOARD_SIZE; i++) {
+
             if (winner)
                 break;
+
             for (int j = 0; j < BOARD_SIZE - 3; j++) {
                 if (placeUsed[BOARD_SIZE - 1 - i][j] != 0
                         && placeUsed[BOARD_SIZE - 1 - i][j] == placeUsed[BOARD_SIZE - 1 - i][j + 1]
@@ -165,31 +160,34 @@ public class MainActivity extends AppCompatActivity {
 
         // Vertical Win
         for (int i = 0; i < BOARD_SIZE; i++) {
+
             if (winner)
                 break;
-                for (int j = 0; j < BOARD_SIZE - 3; j++) {
-                    if (placeUsed[BOARD_SIZE - 1 - j][i] != 0
-                            && placeUsed[BOARD_SIZE - 1 - j][i] == placeUsed[BOARD_SIZE - 2 - j][i]
-                            && placeUsed[BOARD_SIZE - 1 - j][i] == placeUsed[BOARD_SIZE - 3 - j][i]
-                            && placeUsed[BOARD_SIZE - 1 - j][i] == placeUsed[BOARD_SIZE - 4 - j][i]) {
 
-                        setLine(BOARD_SIZE - 1 - j, i, R.drawable.line_vertical_bottom);
-                        setLine(BOARD_SIZE - 2 - j, i, R.drawable.line_vertical_middle);
-                        setLine(BOARD_SIZE - 3 - j, i, R.drawable.line_vertical_middle);
-                        setLine(BOARD_SIZE - 4 - j, i, R.drawable.line_vertical_top);
+            for (int j = 0; j < BOARD_SIZE - 3; j++) {
+                if (placeUsed[BOARD_SIZE - 1 - j][i] != 0
+                        && placeUsed[BOARD_SIZE - 1 - j][i] == placeUsed[BOARD_SIZE - 2 - j][i]
+                        && placeUsed[BOARD_SIZE - 1 - j][i] == placeUsed[BOARD_SIZE - 3 - j][i]
+                        && placeUsed[BOARD_SIZE - 1 - j][i] == placeUsed[BOARD_SIZE - 4 - j][i]) {
 
-                        Win2();
-                        break;
-                    }
+                    setLine(BOARD_SIZE - 1 - j, i, R.drawable.line_vertical_bottom);
+                    setLine(BOARD_SIZE - 2 - j, i, R.drawable.line_vertical_middle);
+                    setLine(BOARD_SIZE - 3 - j, i, R.drawable.line_vertical_middle);
+                    setLine(BOARD_SIZE - 4 - j, i, R.drawable.line_vertical_top);
+
+                    Win2();
+                    break;
                 }
+            }
         }
 
         // Diagonal Line Wins
         for (int i = 0; i < BOARD_SIZE - 3; i++) {
+
             if (winner)
                 break;
-            for (int j = 0; j < BOARD_SIZE - 3; j++) {
 
+            for (int j = 0; j < BOARD_SIZE - 3; j++) {
                 // Ascending Diagonal Line Win
                 if (placeUsed[BOARD_SIZE - 1 - i][j] != 0
                         && placeUsed[BOARD_SIZE - 1 - i][j] == placeUsed[BOARD_SIZE - 2 - i][j + 1]
