@@ -126,21 +126,15 @@ public class MainActivity extends AppCompatActivity {
      */
     private void CheckWin () {
 
-        // Horizontal Win
+        // Horizontal & Vertical Wins
         for (int i = 0; i < BOARD_SIZE; i++)
             if (winner) break;
             else for (int j = 0; j < BOARD_SIZE - 3; j++)
-                if (placeComparator(1 + i, j, 1 + i, j + 1, 1 + i, j + 2, 1 + i, j + 3)) {
+                if (placeComparator(1 + i, j, 1 + i, j + 1, 1 + i, j + 2, 1 + i, j + 3)) { // Horizontal
                     DrawLines(1, i, j);
                     Win2(false);
                     break;
-                }
-
-        // Vertical Win
-        for (int i = 0; i < BOARD_SIZE; i++)
-            if (winner) break;
-            else for (int j = 0; j < BOARD_SIZE - 3; j++)
-                if (placeComparator(1 + j, i, 2 + j, i, 3 + j, i, 4 + j, i)) {
+                } else if (placeComparator(1 + j, i, 2 + j, i, 3 + j, i, 4 + j, i)) { // Vertical
                     DrawLines(2, i, j);
                     Win2(false);
                     break;
