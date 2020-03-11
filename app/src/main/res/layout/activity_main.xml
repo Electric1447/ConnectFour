@@ -34,18 +34,14 @@
         <GridLayout
             android:id="@+id/gl"
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_margin="20dp"
-            android:columnCount="9"
-            android:orientation="horizontal"
-            android:rowCount="9" />
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp" />
 
         <TextView
             android:id="@+id/text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:layout_marginBottom="40dp"
+            android:layout_marginTop="8dp"
             android:gravity="center"
             android:textColor="#000"
             android:textSize="32sp"
@@ -55,10 +51,10 @@
             android:layout_width="120dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="40dp"
+            android:layout_marginTop="22dp"
             android:background="@drawable/custombutton_lgrey"
             android:onClick="resetGame"
-            android:text="RESET"
+            android:text="@string/reset"
             android:textSize="16sp" />
 
     </LinearLayout>
@@ -68,8 +64,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:paddingLeft="26dp"
-        android:paddingBottom="6dp"
+        android:paddingLeft="20dp"
+        android:paddingBottom="8dp"
+        android:text="\n"
         android:textSize="16sp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
