@@ -2,7 +2,9 @@ package eparon.connectfour;
 
 import android.annotation.SuppressLint;
 import android.graphics.Point;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
@@ -13,13 +15,22 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import eparon.connectfour.AI.CPUPlayer;
+import eparon.connectfour.Util.LineDrawer;
+
+import static eparon.connectfour.Util.c4utils.lowestRow;
+
 @SuppressLint("SetTextI18n")
 public class MainActivity extends AppCompatActivity {
 
     public static final int BOARD_SIZE = 9;
+    static final boolean PLAYER_VS_CPU = false;
 
     int gameTurn = 0;
-    boolean winner = false;
+    boolean winner = false, generatingMove;
+
+    CPUPlayer cpu;
+    LineDrawer lineDrawer;
 
     FrameLayout[][] fl = new FrameLayout[BOARD_SIZE][BOARD_SIZE];
     ImageButton[][] ib = new ImageButton[BOARD_SIZE][BOARD_SIZE];
@@ -33,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     int[] cpColors = new int[] {R.drawable.soldier_red, R.drawable.soldier_white};
     String[] colors = new String[] {"Red", "White"};
 
+
     @Override
     protected void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,10 +53,14 @@ public class MainActivity extends AppCompatActivity {
         Text = findViewById(R.id.text);
         currentPlayer = findViewById(R.id.currentPlayer);
 
+        cpu = new CPUPlayer();
+
         Init();
         DrawBoard();
 
         ((TextView)findViewById(R.id.version)).setText(String.format("%s v%s\nCreated by Itai Levin.", getString(R.string.app_name), BuildConfig.VERSION_NAME));
+        final String modeStr = (PLAYER_VS_CPU ? getString(R.string.mode_pvc) : getString(R.string.mode_pvp));
+        ((TextView)findViewById(R.id.mode)).setText(modeStr);
     }
 
     /**
@@ -55,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         winner = false;
         Text.setText(String.format("%s's turn", colors[1]));
         currentPlayer.setImageResource(cpColors[1]);
+        generatingMove = false;
 
         for (int i = 0; i < BOARD_SIZE; i++)
             for (int j = 0; j < BOARD_SIZE; j++) {
@@ -96,30 +113,44 @@ public class MainActivity extends AppCompatActivity {
                 final int finalJ = j;
                 ib[i][j].setOnClickListener(view -> DoTurn(finalJ));
             }
+
+        lineDrawer = new LineDrawer(iv);
     }
+
+    //region DoTurn region
 
     /**
      * DoTurn method.
      *
-     * @param colInt the column the user clicked on
+     * @param col the column the user clicked on
      */
-    private void DoTurn (int colInt) {
-        if (winner) return;
+    private void DoTurn (int col) {
+        if (winner || (PLAYER_VS_CPU && (gameTurn % 2 != 0 || generatingMove))) return;
 
-        for (int i = 0; i < BOARD_SIZE; i++)
-            if (indexArr[BOARD_SIZE - 1 - i][colInt] == 0) {
-
-                indexArr[BOARD_SIZE - 1 - i][colInt] = gameTurn % 2 + 1;
-                ib[BOARD_SIZE - 1 - i][colInt].setImageResource(soldiers[gameTurn % 2]);
-
-                Text.setText(String.format("%s's turn", colors[gameTurn % 2]));
-                currentPlayer.setImageResource(cpColors[gameTurn % 2]);
-
-                gameTurn++;
-                CheckWin();
-                break;
-            }
+        int row = lowestRow(col, indexArr);
+        placePiece(row, col);
+        if (!winner && PLAYER_VS_CPU) DoCPUTurn();
     }
+
+    private void DoCPUTurn () {
+        generatingMove = true;
+        MoveGenerator moveGenerator = new MoveGenerator();
+        moveGenerator.execute();
+    }
+
+    private void placePiece (int r, int c) {
+        indexArr[r][c] = gameTurn % 2 + 1;
+        ib[r][c].setImageResource(soldiers[gameTurn % 2]);
+
+        Text.setText(String.format("%s's turn", colors[gameTurn % 2]));
+        currentPlayer.setImageResource(cpColors[gameTurn % 2]);
+
+        gameTurn++;
+        CheckWin();
+    }
+    //endregion
+
+    //region Win region
 
     /**
      * Check win method.
@@ -130,11 +161,11 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < BOARD_SIZE; i++)
             for (int j = 0; j < BOARD_SIZE - 3; j++)
                 if (placeComparator(1 + i, j, 1 + i, j + 1, 1 + i, j + 2, 1 + i, j + 3)) { // Horizontal
-                    DrawLines(1, i, j);
+                    lineDrawer.DrawLines(LineDrawer.HORIZONTAL_LINE, i, j);
                     Win2(false);
                     return;
                 } else if (placeComparator(1 + j, i, 2 + j, i, 3 + j, i, 4 + j, i)) { // Vertical
-                    DrawLines(2, i, j);
+                    lineDrawer.DrawLines(LineDrawer.VERTICAL_LINE, i, j);
                     Win2(false);
                     return;
                 }
@@ -143,11 +174,11 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < BOARD_SIZE - 3; i++)
             for (int j = 0; j < BOARD_SIZE - 3; j++)
                 if (placeComparator(1 + i, j, 2 + i, j + 1, 3 + i, j + 2, 4 + i, j + 3)) { // Ascending
-                    DrawLines(3, i, j);
+                    lineDrawer.DrawLines(LineDrawer.ASCENDING_DIAGONAL_LINE, i, j);
                     Win2(false);
                     return;
                 } else if (placeComparator(4 + i, j, 3 + i, j + 1, 2 + i, j + 2, 1 + i, j + 3)) { // Descending
-                    DrawLines(4, i, j);
+                    lineDrawer.DrawLines(LineDrawer.DESCENDING_DIAGONAL_LINE, i, j);
                     Win2(false);
                     return;
                 }
@@ -170,56 +201,59 @@ public class MainActivity extends AppCompatActivity {
         int first = indexArr[BOARD_SIZE - a1][a2], second = indexArr[BOARD_SIZE - b1][b2], third = indexArr[BOARD_SIZE - c1][c2], fourth = indexArr[BOARD_SIZE - d1][d2];
         return (first != 0 && first == second && first == third && first == fourth);
     }
+    //endregion
 
     public void resetGame (View view) {
         Init();
     }
 
-    //region Lines region
-    private void setLine (int r, int c, int resID) {
-        iv[r][c].setImageResource(resID);
-    }
+    //region MoveGenerator region
+    @SuppressLint("StaticFieldLeak")
+    private class MoveGenerator extends AsyncTask<Void, Void, Void> {
+        private int row, bestCol;
 
-    private void DrawLines (int type, int i, int j) {
-        switch (type) {
-            case 1: // Horizontal
-                setLine(BOARD_SIZE - 1 - i, j    , R.drawable.line_horizontal_left);
-                setLine(BOARD_SIZE - 1 - i, j + 1, R.drawable.line_horizontal_middle);
-                setLine(BOARD_SIZE - 1 - i, j + 2, R.drawable.line_horizontal_middle);
-                setLine(BOARD_SIZE - 1 - i, j + 3, R.drawable.line_horizontal_right);
-                break;
-            case 2: // Vertical
-                setLine(BOARD_SIZE - 1 - j, i, R.drawable.line_vertical_bottom);
-                setLine(BOARD_SIZE - 2 - j, i, R.drawable.line_vertical_middle);
-                setLine(BOARD_SIZE - 3 - j, i, R.drawable.line_vertical_middle);
-                setLine(BOARD_SIZE - 4 - j, i, R.drawable.line_vertical_top);
-                break;
-            case 3: // Ascending Diagonal
-                setLine(BOARD_SIZE - 1 - i, j    , R.drawable.diagonalline_bottomleft);
-                setLine(BOARD_SIZE - 2 - i, j + 1, R.drawable.diagonalline_ascending);
-                setLine(BOARD_SIZE - 3 - i, j + 2, R.drawable.diagonalline_ascending);
-                setLine(BOARD_SIZE - 4 - i, j + 3, R.drawable.diagonalline_topright);
+        /// Instantiates MoveGenerator with dummy row and column values.
+        public MoveGenerator () {
+            row = -1;
+            bestCol = -1;
+        }
 
-                setLine(BOARD_SIZE - 2 - i, j    , R.drawable.diagonalline_ascending_leftover_top);
-                setLine(BOARD_SIZE - 3 - i, j + 1, R.drawable.diagonalline_ascending_leftover_top);
-                setLine(BOARD_SIZE - 4 - i, j + 2, R.drawable.diagonalline_ascending_leftover_top);
-                setLine(BOARD_SIZE - 1 - i, j + 1, R.drawable.diagonalline_ascending_leftover_bottom);
-                setLine(BOARD_SIZE - 2 - i, j + 2, R.drawable.diagonalline_ascending_leftover_bottom);
-                setLine(BOARD_SIZE - 3 - i, j + 3, R.drawable.diagonalline_ascending_leftover_bottom);
-                break;
-            case 4: // Descending Diagonal
-                setLine(BOARD_SIZE - 4 - i, j    , R.drawable.diagonalline_topleft);
-                setLine(BOARD_SIZE - 3 - i, j + 1, R.drawable.diagonalline_descending);
-                setLine(BOARD_SIZE - 2 - i, j + 2, R.drawable.diagonalline_descending);
-                setLine(BOARD_SIZE - 1 - i, j + 3, R.drawable.diagonalline_bottomright);
+        @Override
+        protected void onPreExecute () {
+            super.onPreExecute();
+        }
 
-                setLine(BOARD_SIZE - 4 - i, j + 1, R.drawable.diagonalline_descending_leftover_top);
-                setLine(BOARD_SIZE - 3 - i, j + 2, R.drawable.diagonalline_descending_leftover_top);
-                setLine(BOARD_SIZE - 2 - i, j + 3, R.drawable.diagonalline_descending_leftover_top);
-                setLine(BOARD_SIZE - 3 - i, j    , R.drawable.diagonalline_descending_leftover_bottom);
-                setLine(BOARD_SIZE - 2 - i, j + 1, R.drawable.diagonalline_descending_leftover_bottom);
-                setLine(BOARD_SIZE - 1 - i, j + 2, R.drawable.diagonalline_descending_leftover_bottom);
-                break;
+        /// Decides the best move for CPU to play.
+        @Override
+        protected Void doInBackground (Void... voids) {
+            long start = System.nanoTime();
+
+            bestCol = cpu.generateMove(indexArr, gameTurn % 2 + 1);
+
+            Log.d("Calculation time", (System.nanoTime() - start) / 1000000 + "[ms]");
+
+            row = lowestRow(bestCol, indexArr);
+
+            // Only allow CPU to play a move after a move is generated
+            // This check was included because onPostExecute seems to update the UI multiple times sometimes.
+            runOnUiThread(() -> {
+                if (generatingMove) {
+                    if (row != -1 && bestCol != -1) placePiece(row, bestCol);
+
+                    row = -1;
+                    bestCol = -1;
+
+                    generatingMove = false;
+                }
+            });
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute (Void aVoid) {
+            super.onPostExecute(aVoid);
+            generatingMove = false;
         }
     }
     //endregion

@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">ConnectFour</string>
 
+    <string name="mode_pvp">2 Player Mode</string>
+    <string name="mode_pvc">Player Vs. CPU Mode</string>
+
     <string name="reset">RESET</string>
 </resources>
