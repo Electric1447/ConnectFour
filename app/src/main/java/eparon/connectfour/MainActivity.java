@@ -1,6 +1,8 @@
 package eparon.connectfour;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -23,11 +25,15 @@ import static eparon.connectfour.Util.c4utils.lowestRow;
 @SuppressLint("SetTextI18n")
 public class MainActivity extends AppCompatActivity {
 
+    public String PREFS_C4 = "C4PrefsFile";
+    SharedPreferences prefs;
+
     public static final int BOARD_SIZE = 9;
-    static final boolean PLAYER_VS_CPU = false;
+    boolean PLAYER_VS_CPU = false;
 
     int gameTurn = 0;
     boolean winner = false, generatingMove;
+    int[][] indexArr = new int[BOARD_SIZE][BOARD_SIZE];
 
     CPUPlayer cpu;
     LineDrawer lineDrawer;
@@ -35,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
     FrameLayout[][] fl = new FrameLayout[BOARD_SIZE][BOARD_SIZE];
     ImageButton[][] ib = new ImageButton[BOARD_SIZE][BOARD_SIZE];
     ImageView[][] iv = new ImageView[BOARD_SIZE][BOARD_SIZE];
-    int[][] indexArr = new int[BOARD_SIZE][BOARD_SIZE];
 
     TextView Text;
     ImageView currentPlayer;
@@ -44,11 +49,14 @@ public class MainActivity extends AppCompatActivity {
     int[] cpColors = new int[] {R.drawable.soldier_red, R.drawable.soldier_white};
     String[] colors = new String[] {"Red", "White"};
 
-
     @Override
     protected void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        prefs = getSharedPreferences(PREFS_C4, Context.MODE_PRIVATE);
+
+        PLAYER_VS_CPU = prefs.getBoolean("mode", PLAYER_VS_CPU);
 
         Text = findViewById(R.id.text);
         currentPlayer = findViewById(R.id.currentPlayer);
@@ -59,14 +67,15 @@ public class MainActivity extends AppCompatActivity {
         DrawBoard();
 
         ((TextView)findViewById(R.id.version)).setText(String.format("%s v%s\nCreated by Itai Levin.", getString(R.string.app_name), BuildConfig.VERSION_NAME));
-        final String modeStr = (PLAYER_VS_CPU ? getString(R.string.mode_pvc) : getString(R.string.mode_pvp));
-        ((TextView)findViewById(R.id.mode)).setText(modeStr);
     }
 
     /**
      * This method initializes the game.
      */
     private void Init () {
+        final String modeStr = (PLAYER_VS_CPU ? getString(R.string.mode_pvc) : getString(R.string.mode_pvp));
+        ((TextView)findViewById(R.id.mode)).setText(modeStr);
+
         gameTurn = 0;
         winner = false;
         Text.setText(String.format("%s's turn", colors[1]));
@@ -132,13 +141,24 @@ public class MainActivity extends AppCompatActivity {
         if (!winner && PLAYER_VS_CPU) DoCPUTurn();
     }
 
+    /**
+     * DoTurn method for the CPUPlayer.
+     */
     private void DoCPUTurn () {
         generatingMove = true;
         MoveGenerator moveGenerator = new MoveGenerator();
         moveGenerator.execute();
     }
 
+    /**
+     * This method places a piece on the board.
+     *
+     * @param r row position
+     * @param c column position
+     */
     private void placePiece (int r, int c) {
+        if (winner || r == -1 || c == -1) return;
+
         indexArr[r][c] = gameTurn % 2 + 1;
         ib[r][c].setImageResource(soldiers[gameTurn % 2]);
 
@@ -197,6 +217,19 @@ public class MainActivity extends AppCompatActivity {
         winner = true;
     }
 
+    /**
+     * Place comparator that is used for checking wins
+     *
+     * @param a1 cell 1's row position
+     * @param a2 cell 1's column position
+     * @param b1 cell 2's row position
+     * @param b2 cell 2's column position
+     * @param c1 cell 3's row position
+     * @param c2 cell 3's column position
+     * @param d1 cell 4's row position
+     * @param d2 cell 4's column position
+     * @return if the 4 cells are the same value.
+     */
     private boolean placeComparator (int a1, int a2, int b1, int b2, int c1, int c2, int d1, int d2) {
         int first = indexArr[BOARD_SIZE - a1][a2], second = indexArr[BOARD_SIZE - b1][b2], third = indexArr[BOARD_SIZE - c1][c2], fourth = indexArr[BOARD_SIZE - d1][d2];
         return (first != 0 && first == second && first == third && first == fourth);
@@ -204,6 +237,14 @@ public class MainActivity extends AppCompatActivity {
     //endregion
 
     public void resetGame (View view) {
+        Init();
+    }
+
+    public void changeMode (View view) {
+        PLAYER_VS_CPU = !PLAYER_VS_CPU;
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("mode", PLAYER_VS_CPU);
+        editor.apply();
         Init();
     }
 
