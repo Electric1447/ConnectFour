@@ -128,30 +128,28 @@ public class MainActivity extends AppCompatActivity {
 
         // Horizontal & Vertical Wins
         for (int i = 0; i < BOARD_SIZE; i++)
-            if (winner) break;
-            else for (int j = 0; j < BOARD_SIZE - 3; j++)
+            for (int j = 0; j < BOARD_SIZE - 3; j++)
                 if (placeComparator(1 + i, j, 1 + i, j + 1, 1 + i, j + 2, 1 + i, j + 3)) { // Horizontal
                     DrawLines(1, i, j);
                     Win2(false);
-                    break;
+                    return;
                 } else if (placeComparator(1 + j, i, 2 + j, i, 3 + j, i, 4 + j, i)) { // Vertical
                     DrawLines(2, i, j);
                     Win2(false);
-                    break;
+                    return;
                 }
 
         // Diagonal Line Wins
         for (int i = 0; i < BOARD_SIZE - 3; i++)
-            if (winner) break;
-            else for (int j = 0; j < BOARD_SIZE - 3; j++)
+            for (int j = 0; j < BOARD_SIZE - 3; j++)
                 if (placeComparator(1 + i, j, 2 + i, j + 1, 3 + i, j + 2, 4 + i, j + 3)) { // Ascending
                     DrawLines(3, i, j);
                     Win2(false);
-                    break;
+                    return;
                 } else if (placeComparator(4 + i, j, 3 + i, j + 1, 2 + i, j + 2, 1 + i, j + 3)) { // Descending
                     DrawLines(4, i, j);
                     Win2(false);
-                    break;
+                    return;
                 }
 
         if (gameTurn == BOARD_SIZE * BOARD_SIZE) Win2(true);
