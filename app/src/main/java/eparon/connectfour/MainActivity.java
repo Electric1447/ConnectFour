@@ -2,6 +2,7 @@ package eparon.connectfour;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.AsyncTask;
@@ -16,6 +17,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.Set;
 
 import eparon.connectfour.AI.CPUPlayer;
 import eparon.connectfour.Util.LineDrawer;
@@ -50,6 +53,11 @@ public class MainActivity extends AppCompatActivity {
     String[] colors = new String[] {"Red", "White"};
 
     @Override
+    public void onBackPressed () {
+        finishAndRemoveTask();
+    }
+
+    @Override
     protected void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -66,15 +74,15 @@ public class MainActivity extends AppCompatActivity {
         Init();
         DrawBoard();
 
-        ((TextView)findViewById(R.id.version)).setText(String.format("%s v%s\nCreated by Itai Levin.", getString(R.string.app_name), BuildConfig.VERSION_NAME));
+        //((TextView)findViewById(R.id.version)).setText(String.format("%s v%s\nCreated by Itai Levin.", getString(R.string.app_name), BuildConfig.VERSION_NAME));
     }
 
     /**
      * This method initializes the game.
      */
     private void Init () {
-        final String modeStr = (PLAYER_VS_CPU ? getString(R.string.mode_pvc) : getString(R.string.mode_pvp));
-        ((TextView)findViewById(R.id.mode)).setText(modeStr);
+        //final String modeStr = (PLAYER_VS_CPU ? getString(R.string.mode_pvc) : getString(R.string.mode_pvp));
+        //((TextView)findViewById(R.id.mode)).setText(modeStr);
 
         gameTurn = 0;
         winner = false;
@@ -241,11 +249,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void changeMode (View view) {
-        PLAYER_VS_CPU = !PLAYER_VS_CPU;
+    /*    PLAYER_VS_CPU = !PLAYER_VS_CPU;
         SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean("mode", PLAYER_VS_CPU);
         editor.apply();
-        Init();
+        Init();*/
+        startActivity(new Intent(MainActivity.this, Settings.class));
     }
 
     //region MoveGenerator region
