@@ -3,8 +3,6 @@ package eparon.connectfour.Util;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static eparon.connectfour.MainActivity.BOARD_SIZE;
-
 public class c4utils {
 
     /**
@@ -31,7 +29,7 @@ public class c4utils {
      * @param arr the current game state
      * @return the lowest row in which a piece can be placed
      */
-    public static int lowestRow (int col, int[][] arr) {
+    public static int lowestRow (int col, int[][] arr, int BOARD_SIZE) {
         // Start looking from the bottom since connect four pieces fall as far down as possible
         for (int i = BOARD_SIZE - 1; i >= 0; i--)
             if (arr[i][col] == 0) return i;
@@ -47,12 +45,12 @@ public class c4utils {
      * @param currentState the current game state
      * @return all possible moves
      */
-    public static ArrayList<Integer[]> possibleMoves (int[][] currentState) {
+    public static ArrayList<Integer[]> possibleMoves (int[][] currentState, int BOARD_SIZE) {
         ArrayList<Integer[]> possible = new ArrayList<>(BOARD_SIZE);
 
         for (int i = 0; i < BOARD_SIZE; i++) {
             // If this column is not empty, we can add the (row, column) pair to the list
-            int row = lowestRow(i, currentState);
+            int row = lowestRow(i, currentState, BOARD_SIZE);
             if (row != -1) possible.add(new Integer[] {row, i});
         }
 
@@ -68,7 +66,7 @@ public class c4utils {
      * @param player the player to check a win for
      * @return TODO
      */
-    public static boolean booleanWinChecker (int row, int col, int[][] arr, int player) {
+    public static boolean booleanWinChecker (int row, int col, int[][] arr, int player, int BOARD_SIZE) {
         // dx and dy are used to check "lines" around the row and column
         final int[] dx = {0, 1, 1, 1};
         final int[] dy = {-1, -1, 0, 1};

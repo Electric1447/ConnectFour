@@ -5,7 +5,8 @@
     android:id="@+id/cl"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary"
+    android:background="@color/settingsColorPrimaryDark"
+    android:theme="@style/SettingsActivityTheme"
     tools:context=".Settings"
     tools:ignore="Autofill,HardcodedText,RtlHardcoded,RtlSymmetry,RelativeOverlap">
 
@@ -25,7 +26,7 @@
                 android:layout_marginTop="6dp"
                 android:layout_marginBottom="36dp"
                 android:background="@drawable/rounded_corners"
-                android:backgroundTint="@color/colorPrimaryLight"
+                android:backgroundTint="@color/settingsColorPrimary"
                 android:fontFamily="sans-serif-condensed-medium"
                 android:gravity="center"
                 android:paddingTop="12dp"
@@ -39,7 +40,7 @@
                 android:layout_height="56dp"
                 android:layout_marginBottom="16dp"
                 android:background="@drawable/rounded_corners"
-                android:backgroundTint="@color/colorPrimaryLight"
+                android:backgroundTint="@color/settingsColorPrimary"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp">
 
@@ -70,7 +71,7 @@
                 android:layout_height="56dp"
                 android:layout_marginBottom="16dp"
                 android:background="@drawable/rounded_corners"
-                android:backgroundTint="@color/colorPrimaryLight"
+                android:backgroundTint="@color/settingsColorPrimary"
                 android:onClick="changeMode"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp">
@@ -111,7 +112,7 @@
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:layout_gravity="end|bottom"
+        android:layout_gravity="right|bottom"
         android:layout_margin="24dp"
         android:onClick="goBack"
         android:scaleType="center"

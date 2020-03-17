@@ -18,8 +18,6 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.Set;
-
 import eparon.connectfour.AI.CPUPlayer;
 import eparon.connectfour.Util.LineDrawer;
 
@@ -31,19 +29,19 @@ public class MainActivity extends AppCompatActivity {
     public String PREFS_C4 = "C4PrefsFile";
     SharedPreferences prefs;
 
-    public static final int BOARD_SIZE = 9;
+    int BOARD_SIZE = 9;
     boolean PLAYER_VS_CPU = false;
 
     int gameTurn = 0;
     boolean winner = false, generatingMove;
-    int[][] indexArr = new int[BOARD_SIZE][BOARD_SIZE];
+    int[][] indexArr;
 
     CPUPlayer cpu;
     LineDrawer lineDrawer;
 
-    FrameLayout[][] fl = new FrameLayout[BOARD_SIZE][BOARD_SIZE];
-    ImageButton[][] ib = new ImageButton[BOARD_SIZE][BOARD_SIZE];
-    ImageView[][] iv = new ImageView[BOARD_SIZE][BOARD_SIZE];
+    FrameLayout[][] fl;
+    ImageButton[][] ib;
+    ImageView[][] iv;
 
     TextView Text;
     ImageView currentPlayer;
@@ -54,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed () {
-        finishAndRemoveTask();
     }
 
     @Override
@@ -64,25 +61,28 @@ public class MainActivity extends AppCompatActivity {
 
         prefs = getSharedPreferences(PREFS_C4, Context.MODE_PRIVATE);
 
+        BOARD_SIZE = prefs.getInt("board_size", BOARD_SIZE);
         PLAYER_VS_CPU = prefs.getBoolean("mode", PLAYER_VS_CPU);
+
+        indexArr = new int[BOARD_SIZE][BOARD_SIZE];
+
+        fl = new FrameLayout[BOARD_SIZE][BOARD_SIZE];
+        ib = new ImageButton[BOARD_SIZE][BOARD_SIZE];
+        iv = new ImageView[BOARD_SIZE][BOARD_SIZE];
+
+        cpu = new CPUPlayer(BOARD_SIZE);
 
         Text = findViewById(R.id.text);
         currentPlayer = findViewById(R.id.currentPlayer);
 
-        cpu = new CPUPlayer();
-
         Init();
         DrawBoard();
-
-        //((TextView)findViewById(R.id.version)).setText(String.format("%s v%s\nCreated by Itai Levin.", getString(R.string.app_name), BuildConfig.VERSION_NAME));
     }
 
     /**
      * This method initializes the game.
      */
     private void Init () {
-        //final String modeStr = (PLAYER_VS_CPU ? getString(R.string.mode_pvc) : getString(R.string.mode_pvp));
-        //((TextView)findViewById(R.id.mode)).setText(modeStr);
 
         gameTurn = 0;
         winner = false;
@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
                 ib[i][j].setOnClickListener(view -> DoTurn(finalJ));
             }
 
-        lineDrawer = new LineDrawer(iv);
+        lineDrawer = new LineDrawer(iv, BOARD_SIZE);
     }
 
     //region DoTurn region
@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
     private void DoTurn (int col) {
         if (winner || (PLAYER_VS_CPU && (gameTurn % 2 != 0 || generatingMove))) return;
 
-        int row = lowestRow(col, indexArr);
+        int row = lowestRow(col, indexArr, BOARD_SIZE);
         placePiece(row, col);
         if (!winner && PLAYER_VS_CPU) DoCPUTurn();
     }
@@ -248,12 +248,7 @@ public class MainActivity extends AppCompatActivity {
         Init();
     }
 
-    public void changeMode (View view) {
-    /*    PLAYER_VS_CPU = !PLAYER_VS_CPU;
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean("mode", PLAYER_VS_CPU);
-        editor.apply();
-        Init();*/
+    public void goSettings (View view) {
         startActivity(new Intent(MainActivity.this, Settings.class));
     }
 
@@ -282,7 +277,7 @@ public class MainActivity extends AppCompatActivity {
 
             Log.d("Calculation time", (System.nanoTime() - start) / 1000000 + "[ms]");
 
-            row = lowestRow(bestCol, indexArr);
+            row = lowestRow(bestCol, indexArr, BOARD_SIZE);
 
             // Only allow CPU to play a move after a move is generated
             // This check was included because onPostExecute seems to update the UI multiple times sometimes.

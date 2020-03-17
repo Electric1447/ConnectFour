@@ -4,7 +4,6 @@ import android.widget.ImageView;
 
 import eparon.connectfour.R;
 
-import static eparon.connectfour.MainActivity.BOARD_SIZE;
 import static eparon.connectfour.Util.ResUtil.getResID;
 
 public class LineDrawer {
@@ -14,10 +13,12 @@ public class LineDrawer {
     public static final int ASCENDING_DIAGONAL_LINE = 3;
     public static final int DESCENDING_DIAGONAL_LINE = 4;
 
+    private int BOARD_SIZE;
     private ImageView[][] iv;
 
-    public LineDrawer (ImageView[][] iv) {
+    public LineDrawer (ImageView[][] iv, int boardSize) {
         this.iv = iv;
+        this.BOARD_SIZE = boardSize;
     }
 
     public void DrawLines (int type, int i, int j) {

@@ -1,17 +1,36 @@
 package eparon.connectfour.AI;
 
+import android.util.Log;
+
 import eparon.connectfour.Util.c4utils;
 
 @SuppressWarnings("WeakerAccess")
 public class CPUPlayer {
 
     // The depth through which CPU searches for a valuable move.
-    // Currently set to 9 (so CPU essentially looks 9 moves ahead and picks the best one).
-    private static final int MAX_DEPTH = 9;
+    private final int MAX_DEPTH;
+
+    // Sum of all utilities.
+    private static final int[] utilsSum = new int[] {108, 176, 260, 360, 476, 608, 756};
 
     // Stores the overall utilities of all positions on a board.
     // Each utility value determines how valuable a position is based on the number of winning scenarios that includes the given position.
-    private static final int[][] allUtilities = new int[][] {{3, 4, 5, 7, 5, 4, 3}, {4, 6, 8, 10, 8, 6, 4}, {5, 8, 11, 13, 11, 8, 5}, {5, 8, 11, 13, 11, 8, 5}, {4, 6, 8, 10, 8, 6, 4}, {3, 4, 5, 7, 5, 4, 3}};
+    private static final int[][][] allUtilities = new int[][][] {{{3, 4, 5, 7, 5, 4, 3}, {4, 6, 8, 10, 8, 6, 4}, {6, 8, 11, 13, 11, 8, 5}, {7, 10, 13, 16, 13, 10, 7}, {5, 8, 11, 13, 11, 8, 5}, {4, 6, 8, 10, 8, 6, 4}, {3, 4, 5, 7, 5, 4, 3}}, // 7
+            {{3, 4, 5, 7, 7, 5, 4, 3}, {4, 6, 8, 10, 10, 8, 6, 4}, {5, 8, 11, 13, 13, 11, 8, 5}, {7, 10, 13, 16, 16, 13, 10, 7}, {7, 10, 13, 16, 16, 13, 10, 7}, {5, 8, 11, 13, 13, 11, 8, 5}, {4, 6, 8, 10, 10, 8, 6, 4}, {3, 4, 5, 7, 7, 5, 4, 3}}, // 8
+            {{3, 4, 5, 7, 7, 7, 5, 4, 3}, {4, 6, 8, 10, 10, 10, 8, 6, 4}, {5, 8, 11, 13, 13, 13, 11, 8, 5}, {7, 10, 13, 16, 16, 16, 13, 10, 7}, {7, 10, 13, 16, 16, 16, 13, 10, 7}, {7, 10, 13, 16, 16, 16, 13, 10, 7}, {5, 8, 11, 13, 13, 13, 11, 8, 5}, {4, 6, 8, 10, 10, 10, 8, 6, 4}, {3, 4, 5, 7, 7, 7, 5, 4, 3}}, // 9
+            {{3, 4, 5, 7, 7, 7, 7, 5, 4, 3}, {4, 6, 8, 10, 10, 10, 10, 8, 6, 4}, {5, 8, 11, 13, 13, 13, 13, 11, 8, 5}, {7, 10, 13, 16, 16, 16, 16, 13, 10, 7}, {7, 10, 13, 16, 16, 16, 16, 13, 10, 7}, {7, 10, 13, 16, 16, 16, 16, 13, 10, 7}, {7, 10, 13, 16, 16, 16, 16, 13, 10, 7}, {5, 8, 11, 13, 13, 13, 13, 11, 8, 5}, {4, 6, 8, 10, 10, 10, 10, 8, 6, 4}, {3, 4, 5, 7, 7, 7, 7, 5, 4, 3}}, // 10
+            {{3, 4, 5, 7, 7, 7, 7, 7, 5, 4, 3}, {4, 6, 8, 10, 10, 10, 10, 10, 8, 6, 4}, {5, 8, 11, 13, 13, 13, 13, 13, 11, 8, 5}, {7, 10, 13, 16, 16, 16, 16, 16, 13, 10, 7}, {7, 10, 13, 16, 16, 16, 16, 16, 13, 10, 7}, {7, 10, 13, 16, 16, 16, 16, 16, 13, 10, 7}, {7, 10, 13, 16, 16, 16, 16, 16, 13, 10, 7}, {7, 10, 13, 16, 16, 16, 16, 16, 13, 10, 7}, {5, 8, 11, 13, 13, 13, 13, 13, 11, 8, 5}, {4, 6, 8, 10, 10, 10, 10, 10, 8, 6, 4}, {3, 4, 5, 7, 7, 7, 7, 7, 5, 4, 3}}}; // 11
+
+    private int BOARD_SIZE;
+
+    public CPUPlayer (int boardSize) {
+        this.BOARD_SIZE = boardSize;
+
+        if (boardSize >= 9)
+            this.MAX_DEPTH = 8;
+        else
+            this.MAX_DEPTH = 9;
+    }
 
     /**
      * Generates the best possible move by looking 9 moves ahead in all possibilities.
@@ -46,14 +65,14 @@ public class CPUPlayer {
         }
 
         // Get all possible moves and start iterating to find best move.
-        for (Integer[] move : c4utils.possibleMoves(cState)) {
+        for (Integer[] move : c4utils.possibleMoves(cState, BOARD_SIZE)) {
             // Get a deep copy of the board to prevent modifications to original calling board.
             int[][] newState = c4utils.deepCopyState(cState);
             int row = move[0], col = move[1];
             newState[row][col] = player;
 
             // If the player wins, there is no point in checking further. Returns a massive static eval so that the calling minimizePlay node knows not to pick this move.
-            if (c4utils.booleanWinChecker(row, col, newState, player)) {
+            if (c4utils.booleanWinChecker(row, col, newState, player, BOARD_SIZE)) {
                 ret[0] = col;
                 ret[1] = 1000000;
                 break;
@@ -94,13 +113,13 @@ public class CPUPlayer {
             return ret;
         }
 
-        for (Integer[] move : c4utils.possibleMoves(cState)) {
+        for (Integer[] move : c4utils.possibleMoves(cState, BOARD_SIZE)) {
             int[][] newState = c4utils.deepCopyState(cState);
             int row = move[0], col = move[1];
             newState[row][col] = player;
 
             // Return a large negative number so that calling maximizePlay node knows not to go down this path.
-            if (c4utils.booleanWinChecker(row, col, newState, player)) {
+            if (c4utils.booleanWinChecker(row, col, newState, player, BOARD_SIZE)) {
                 ret[0] = col;
                 ret[1] = -1000000;
                 break;
@@ -131,16 +150,17 @@ public class CPUPlayer {
      * @return the static evaluation
      */
     public int utilityStaticEval (int[][] currentState, int player) {
-        int utility = 138, sum = 0;
+        int[][] cAllUtil = allUtilities[currentState.length - 7];
+        int sum = 0, utility = utilsSum[currentState.length - 7];
 
         // Loop through all utilities.
         // If current player has a position, add the utility, otherwise subtract the utility as a penalty.
-        for (int row = 0; row < allUtilities.length; row++)
-            for (int col = 0; col < allUtilities[row].length; col++)
+        for (int row = 0; row < cAllUtil.length; row++)
+            for (int col = 0; col < cAllUtil[row].length; col++)
                 if (currentState[row][col] == player)
-                    sum += allUtilities[row][col];
+                    sum += cAllUtil[row][col];
                 else if (currentState[row][col] == otherPlayer(player))
-                    sum -= allUtilities[row][col];
+                    sum -= cAllUtil[row][col];
 
         return utility + sum;
     }
@@ -152,7 +172,7 @@ public class CPUPlayer {
      * @return the second player
      */
     private static int otherPlayer (int player) {
-        return (player * 2) % 3;
+        return (player == 2) ? 1 : 2;
     }
 
 }
