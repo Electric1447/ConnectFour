@@ -27,6 +27,7 @@ public class c4utils {
      *
      * @param col the column to insert into
      * @param arr the current game state
+     * @param BOARD_SIZE the board's size
      * @return the lowest row in which a piece can be placed
      */
     public static int lowestRow (int col, int[][] arr, int BOARD_SIZE) {
@@ -43,6 +44,7 @@ public class c4utils {
      * {@code [row, column]}.
      *
      * @param currentState the current game state
+     * @param BOARD_SIZE the board's size
      * @return all possible moves
      */
     public static ArrayList<Integer[]> possibleMoves (int[][] currentState, int BOARD_SIZE) {
@@ -64,6 +66,7 @@ public class c4utils {
      * @param col    the column of the piece
      * @param arr    the game state in which to look for a win
      * @param player the player to check a win for
+     * @param BOARD_SIZE the board's size
      * @return TODO
      */
     public static boolean booleanWinChecker (int row, int col, int[][] arr, int player, int BOARD_SIZE) {

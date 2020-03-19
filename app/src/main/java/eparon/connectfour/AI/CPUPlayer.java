@@ -23,6 +23,11 @@ public class CPUPlayer {
 
     private int BOARD_SIZE;
 
+    /**
+     * Constructor for CPUPLayer
+     *
+     * @param boardSize the board's size
+     */
     public CPUPlayer (int boardSize) {
         this.BOARD_SIZE = boardSize;
 

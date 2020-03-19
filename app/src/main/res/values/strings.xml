@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">ConnectFour</string>
 
+    <string name="draw">Draw!</string>
+
     <string name="reset">RESET</string>
 
     <string name="err_board_size">Board Size should be between 7 to 11.</string>

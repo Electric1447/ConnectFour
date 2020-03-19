@@ -220,7 +220,7 @@ public class MainActivity extends AppCompatActivity {
      * @param draw win/draw
      */
     private void Win2 (boolean draw) {
-        if (draw) Text.setText("Draw!");
+        if (draw) Text.setText(getString(R.string.draw));
         else Text.setText(String.format("The Winner is: %s", colors[gameTurn % 2]));
         winner = true;
     }
@@ -275,11 +275,11 @@ public class MainActivity extends AppCompatActivity {
 
             bestCol = cpu.generateMove(indexArr, gameTurn % 2 + 1);
 
-            Log.d("Calculation time", (System.nanoTime() - start) / 1000000 + "[ms]");
+            Log.d("Calculation time: ", (System.nanoTime() - start) / 1000000 + "[ms]");
 
             row = lowestRow(bestCol, indexArr, BOARD_SIZE);
 
-            // Only allow CPU to play a move after a move is generated
+            // Only allow CPU to play a move after a move is generated.
             // This check was included because onPostExecute seems to update the UI multiple times sometimes.
             runOnUiThread(() -> {
                 if (generatingMove) {
