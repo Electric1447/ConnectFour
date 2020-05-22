@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        android:title="@string/app_name"
+        app:iconSpaceReserved="false">
+
+        <ListPreference
+            android:defaultValue="9"
+            android:entries="@array/board_size_array"
+            android:entryValues="@array/board_size_array"
+            android:key="board_size"
+            android:summary="@string/prefs_board_size"
+            android:title="@string/prefs_board_size"
+            app:iconSpaceReserved="false" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="mode"
+            android:title="@string/prefs_mode"
+            app:iconSpaceReserved="false" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/prefs_about"
+        app:iconSpaceReserved="false">
+
+        <Preference
+            android:key="about"
+            android:summary="@string/prefs_about_summery"
+            android:title="@string/app_name"
+            app:iconSpaceReserved="false" />
+
+        <Preference
+            android:key="github"
+            android:summary="@string/prefs_github_summery"
+            android:title="@string/prefs_github_title"
+            app:iconSpaceReserved="false" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

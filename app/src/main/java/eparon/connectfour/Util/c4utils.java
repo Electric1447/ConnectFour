@@ -16,7 +16,8 @@ public class c4utils {
 
         // Just copy every entry into a new 2D array and return it.
         int[][] ret = new int[cState.length][cState[0].length];
-        for (int i = 0; i < cState.length; i++) ret[i] = Arrays.copyOf(cState[i], cState[i].length);
+        for (int i = 0; i < cState.length; i++)
+            ret[i] = Arrays.copyOf(cState[i], cState[i].length);
 
         return ret;
     }
@@ -33,7 +34,8 @@ public class c4utils {
     public static int lowestRow (int col, int[][] arr, int BOARD_SIZE) {
         // Start looking from the bottom since connect four pieces fall as far down as possible
         for (int i = BOARD_SIZE - 1; i >= 0; i--)
-            if (arr[i][col] == 0) return i;
+            if (arr[i][col] == 0)
+                return i;
 
         return -1; // If there was no valid move, return -1 to denote this
     }
@@ -53,7 +55,8 @@ public class c4utils {
         for (int i = 0; i < BOARD_SIZE; i++) {
             // If this column is not empty, we can add the (row, column) pair to the list
             int row = lowestRow(i, currentState, BOARD_SIZE);
-            if (row != -1) possible.add(new Integer[] {row, i});
+            if (row != -1)
+                possible.add(new Integer[] {row, i});
         }
 
         return possible;
@@ -100,7 +103,8 @@ public class c4utils {
                 c -= x;
             }
 
-            if (count == 4) return true;
+            if (count == 4)
+                return true;
         }
 
         return false;

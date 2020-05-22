@@ -1,7 +1,6 @@
 package eparon.connectfour;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Point;
@@ -17,16 +16,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 import eparon.connectfour.AI.CPUPlayer;
 import eparon.connectfour.Util.LineDrawer;
 
 import static eparon.connectfour.Util.c4utils.lowestRow;
 
-@SuppressLint("SetTextI18n")
 public class MainActivity extends AppCompatActivity {
 
-    public String PREFS_C4 = "C4PrefsFile";
     SharedPreferences prefs;
 
     int BOARD_SIZE = 9;
@@ -48,10 +46,12 @@ public class MainActivity extends AppCompatActivity {
 
     int[] soldiers = new int[] {R.drawable.soldier_white_border, R.drawable.soldier_red_border};
     int[] cpColors = new int[] {R.drawable.soldier_red, R.drawable.soldier_white};
-    String[] colors = new String[] {"Red", "White"};
+    String[] colors, colorsTurn;
 
     @Override
     public void onBackPressed () {
+        this.finishAffinity();
+        this.finishAndRemoveTask();
     }
 
     @Override
@@ -59,9 +59,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        prefs = getSharedPreferences(PREFS_C4, Context.MODE_PRIVATE);
+        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
-        BOARD_SIZE = prefs.getInt("board_size", BOARD_SIZE);
+        BOARD_SIZE = Integer.parseInt(prefs.getString("board_size", String.valueOf(BOARD_SIZE)));
         PLAYER_VS_CPU = prefs.getBoolean("mode", PLAYER_VS_CPU);
 
         indexArr = new int[BOARD_SIZE][BOARD_SIZE];
@@ -75,6 +75,9 @@ public class MainActivity extends AppCompatActivity {
         Text = findViewById(R.id.text);
         currentPlayer = findViewById(R.id.currentPlayer);
 
+        colors = new String[] {getString(R.string.player_red), getString(R.string.player_white)};
+        colorsTurn = new String[] {getString(R.string.turn_red), getString(R.string.turn_white)};
+
         Init();
         DrawBoard();
     }
@@ -86,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
         gameTurn = 0;
         winner = false;
-        Text.setText(String.format("%s's turn", colors[1]));
+        Text.setText(colorsTurn[1]);
         currentPlayer.setImageResource(cpColors[1]);
         generatingMove = false;
 
@@ -142,11 +145,14 @@ public class MainActivity extends AppCompatActivity {
      * @param col the column the user clicked on
      */
     private void DoTurn (int col) {
-        if (winner || (PLAYER_VS_CPU && (gameTurn % 2 != 0 || generatingMove))) return;
+        if (winner || (PLAYER_VS_CPU && (gameTurn % 2 != 0 || generatingMove)))
+            return;
 
         int row = lowestRow(col, indexArr, BOARD_SIZE);
         placePiece(row, col);
-        if (!winner && PLAYER_VS_CPU) DoCPUTurn();
+
+        if (!winner && PLAYER_VS_CPU)
+            DoCPUTurn();
     }
 
     /**
@@ -165,12 +171,13 @@ public class MainActivity extends AppCompatActivity {
      * @param c column position
      */
     private void placePiece (int r, int c) {
-        if (winner || r == -1 || c == -1) return;
+        if (winner || r == -1 || c == -1)
+            return;
 
         indexArr[r][c] = gameTurn % 2 + 1;
         ib[r][c].setImageResource(soldiers[gameTurn % 2]);
 
-        Text.setText(String.format("%s's turn", colors[gameTurn % 2]));
+        Text.setText(colorsTurn[gameTurn % 2]);
         currentPlayer.setImageResource(cpColors[gameTurn % 2]);
 
         gameTurn++;
@@ -188,11 +195,14 @@ public class MainActivity extends AppCompatActivity {
         // Horizontal & Vertical Wins
         for (int i = 0; i < BOARD_SIZE; i++)
             for (int j = 0; j < BOARD_SIZE - 3; j++)
-                if (placeComparator(1 + i, j, 1 + i, j + 1, 1 + i, j + 2, 1 + i, j + 3)) { // Horizontal
+                // Horizontal
+                if (placeComparator(1 + i, j, 1 + i, j + 1, 1 + i, j + 2, 1 + i, j + 3)) {
                     lineDrawer.DrawLines(LineDrawer.HORIZONTAL_LINE, i, j);
                     Win2(false);
                     return;
-                } else if (placeComparator(1 + j, i, 2 + j, i, 3 + j, i, 4 + j, i)) { // Vertical
+                }
+                // Vertical
+                else if (placeComparator(1 + j, i, 2 + j, i, 3 + j, i, 4 + j, i)) {
                     lineDrawer.DrawLines(LineDrawer.VERTICAL_LINE, i, j);
                     Win2(false);
                     return;
@@ -201,17 +211,21 @@ public class MainActivity extends AppCompatActivity {
         // Diagonal Line Wins
         for (int i = 0; i < BOARD_SIZE - 3; i++)
             for (int j = 0; j < BOARD_SIZE - 3; j++)
-                if (placeComparator(1 + i, j, 2 + i, j + 1, 3 + i, j + 2, 4 + i, j + 3)) { // Ascending
+                // Ascending
+                if (placeComparator(1 + i, j, 2 + i, j + 1, 3 + i, j + 2, 4 + i, j + 3)) {
                     lineDrawer.DrawLines(LineDrawer.ASCENDING_DIAGONAL_LINE, i, j);
                     Win2(false);
                     return;
-                } else if (placeComparator(4 + i, j, 3 + i, j + 1, 2 + i, j + 2, 1 + i, j + 3)) { // Descending
+                }
+                // Descending
+                else if (placeComparator(4 + i, j, 3 + i, j + 1, 2 + i, j + 2, 1 + i, j + 3)) {
                     lineDrawer.DrawLines(LineDrawer.DESCENDING_DIAGONAL_LINE, i, j);
                     Win2(false);
                     return;
                 }
 
-        if (gameTurn == BOARD_SIZE * BOARD_SIZE) Win2(true);
+        if (gameTurn == BOARD_SIZE * BOARD_SIZE)
+            Win2(true);
     }
 
     /**
@@ -220,8 +234,7 @@ public class MainActivity extends AppCompatActivity {
      * @param draw win/draw
      */
     private void Win2 (boolean draw) {
-        if (draw) Text.setText(getString(R.string.draw));
-        else Text.setText(String.format("The Winner is: %s", colors[gameTurn % 2]));
+        Text.setText(!draw ? String.format("%s %s", getString(R.string.winner), colors[gameTurn % 2]) : getString(R.string.draw));
         winner = true;
     }
 
@@ -249,12 +262,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void goSettings (View view) {
-        startActivity(new Intent(MainActivity.this, Settings.class));
+        startActivity(new Intent(MainActivity.this, SettingsActivity.class));
     }
 
     //region MoveGenerator region
     @SuppressLint("StaticFieldLeak")
     private class MoveGenerator extends AsyncTask<Void, Void, Void> {
+
         private int row, bestCol;
 
         /// Instantiates MoveGenerator with dummy row and column values.
@@ -283,7 +297,8 @@ public class MainActivity extends AppCompatActivity {
             // This check was included because onPostExecute seems to update the UI multiple times sometimes.
             runOnUiThread(() -> {
                 if (generatingMove) {
-                    if (row != -1 && bestCol != -1) placePiece(row, bestCol);
+                    if (row != -1 && bestCol != -1)
+                        placePiece(row, bestCol);
 
                     row = -1;
                     bestCol = -1;

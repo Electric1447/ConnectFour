@@ -1,10 +1,7 @@
 package eparon.connectfour.AI;
 
-import android.util.Log;
-
 import eparon.connectfour.Util.c4utils;
 
-@SuppressWarnings("WeakerAccess")
 public class CPUPlayer {
 
     // The depth through which CPU searches for a valuable move.
@@ -60,7 +57,7 @@ public class CPUPlayer {
      * @param beta   the beta value used for alpha beta pruning (upper bound)
      * @return an integer array constructed using {@code [col of best move, static eval]}
      */
-    public int[] maximizePlay (int[][] cState, int depth, int player, int alpha, int beta) {
+    private int[] maximizePlay (int[][] cState, int depth, int player, int alpha, int beta) {
         int[] ret = new int[] {-1, Integer.MIN_VALUE};
 
         // If max depth is reached, simply return static eval.
@@ -92,7 +89,8 @@ public class CPUPlayer {
             }
 
             alpha = Math.max(alpha, ret[1]);
-            if (beta <= alpha) break;
+            if (beta <= alpha)
+                break;
         }
 
         return ret;
@@ -109,7 +107,7 @@ public class CPUPlayer {
      * @param beta   the beta value used for alpha beta pruning (upper bound)
      * @return an integer array constructed using {@code [col of best move, static eval]}
      */
-    public int[] minimizePlay (int[][] cState, int depth, int player, int alpha, int beta) {
+    private int[] minimizePlay (int[][] cState, int depth, int player, int alpha, int beta) {
         // All functionality is essentially the same as maximizePlay, except we're looking for the lowest possible score now.
         int[] ret = new int[] {-1, Integer.MAX_VALUE};
 
@@ -139,7 +137,8 @@ public class CPUPlayer {
 
             // Instead of alpha, update beta for pruning.
             beta = Math.min(beta, ret[1]);
-            if (beta <= alpha) break;
+            if (beta <= alpha)
+                break;
         }
 
         return ret;
@@ -154,7 +153,7 @@ public class CPUPlayer {
      * @param player       the player to evaluate for
      * @return the static evaluation
      */
-    public int utilityStaticEval (int[][] currentState, int player) {
+    private int utilityStaticEval (int[][] currentState, int player) {
         int[][] cAllUtil = allUtilities[currentState.length - 7];
         int sum = 0, utility = utilsSum[currentState.length - 7];
 

@@ -8,10 +8,7 @@ import static eparon.connectfour.Util.ResUtil.getResID;
 
 public class LineDrawer {
 
-    public static final int HORIZONTAL_LINE = 1;
-    public static final int VERTICAL_LINE = 2;
-    public static final int ASCENDING_DIAGONAL_LINE = 3;
-    public static final int DESCENDING_DIAGONAL_LINE = 4;
+    public static final int HORIZONTAL_LINE = 1, VERTICAL_LINE = 2, ASCENDING_DIAGONAL_LINE = 3, DESCENDING_DIAGONAL_LINE = 4;
 
     private int BOARD_SIZE;
     private ImageView[][] iv;

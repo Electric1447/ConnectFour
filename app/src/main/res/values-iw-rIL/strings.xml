@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ארבע בשורה</string>
+    <string name="settings">הגדרות</string>
+    <string name="draw">תיקו!</string>
+
+    <string name="player_red">אדום</string>
+    <string name="player_white">לבן</string>
+    <string name="turn_red">תור אדום</string>
+    <string name="turn_white">תור לבן</string>
+    <string name="winner">המנצח הוא:</string>
+
+    <string name="prefs_about">אודות</string>
+    <string name="prefs_board_size">גודל לוח</string>
+    <string name="prefs_mode">משחק נגד המחשב</string>
+    <string name="prefs_about_version_suffix">גרסה&#160;</string>
+    <string name="prefs_about_summery">פותח על ידי איתי לוין</string>
+    <string name="prefs_github_title">קוד מקור</string>
+    <string name="prefs_github_summery">הצג את קוד המקור של האפליקציה</string>
+</resources>
